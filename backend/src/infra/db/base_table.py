@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Any
 from uuid import uuid7
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import CHAR, DateTime, FetchedValue, event, func
 from sqlalchemy.orm import (
@@ -11,9 +12,12 @@ from sqlalchemy.orm import (
     with_loader_criteria,
 )
 
+SHANGHAI_TZ = ZoneInfo("Asia/Shanghai")
+
 
 class MappedBase(DeclarativeBase):
     __abstract__ = True
+
 
 class CoreTable(MappedBase):
     """只包含所有表都有的字段。"""
@@ -34,12 +38,13 @@ class CoreTable(MappedBase):
         comment="最后更新时间",
     )
 
+
 class SoftDeleteMixin:
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime)
 
     def soft_delete(self) -> None:
-        self.deleted_at = datetime.now()  # noqa: DTZ005
-    
+        self.deleted_at = datetime.now(SHANGHAI_TZ).replace(tzinfo=None)
+
 
 class BaseTable(SoftDeleteMixin, CoreTable):
     """默认业务模型基类，支持软删除。"""

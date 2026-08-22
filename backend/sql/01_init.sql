@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `users`
     `is_superuser`    TINYINT(1)   NOT NULL COMMENT '是否为超级管理员',
     `last_login`      DATETIME     NULL COMMENT '最后登录时间',
     `created_at`      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_at`      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    `updated_at`      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted_at`      DATETIME     NULL COMMENT '软删除时间，为空表示未删除',
     PRIMARY KEY (`id`),
     UNIQUE KEY `ix_users_email` (`email`),
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `permissions`
     `name`        VARCHAR(100) NOT NULL COMMENT '权限名称',
     `description` VARCHAR(200) NULL COMMENT '权限描述',
     `created_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    `updated_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted_at`  DATETIME     NULL COMMENT '软删除时间，为空表示未删除',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uq_permissions_code` (`code`)
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS `roles`
     `name`        VARCHAR(100) NOT NULL COMMENT '角色名称',
     `description` VARCHAR(200) NULL COMMENT '角色描述',
     `created_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    `updated_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted_at`  DATETIME     NULL COMMENT '软删除时间，为空表示未删除',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uq_roles_code` (`code`)
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `role_permissions`
     `role_id`       CHAR(36) NOT NULL COMMENT '角色 UUID',
     `permission_id` CHAR(36) NOT NULL COMMENT '权限 UUID',
     `created_at`    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_at`    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    `updated_at`    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uq_role_permissions_pair` (`role_id`, `permission_id`)
 ) ENGINE = InnoDB
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS `user_roles`
     `user_id`    CHAR(36) NOT NULL COMMENT '用户 UUID',
     `role_id`    CHAR(36) NOT NULL COMMENT '角色 UUID',
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uq_user_roles_pair` (`user_id`, `role_id`)
 ) ENGINE = InnoDB
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `model_providers`
     `api_key`     TEXT         NULL COMMENT 'API密钥（加密存储）',
     `description` VARCHAR(500) NULL COMMENT '供应商描述',
     `created_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    `updated_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted_at`  DATETIME     NULL COMMENT '软删除时间，为空表示未删除',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `models`
     `is_default`     TINYINT(1)     NOT NULL COMMENT '是否为默认模型',
     `description`    TEXT           NULL COMMENT '模型描述',
     `created_at`     DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_at`     DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    `updated_at`     DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted_at`     DATETIME       NULL COMMENT '软删除时间，为空表示未删除',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uq_models_model_id` (`model_id`)
@@ -154,7 +154,7 @@ CREATE TABLE IF NOT EXISTS `knowledge_bases`
     `top_k`                INT          NOT NULL COMMENT '返回结果数',
     `similarity_threshold` FLOAT        NOT NULL COMMENT '相似度阈值',
     `created_at`           DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_at`           DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    `updated_at`           DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted_at`           DATETIME     NULL COMMENT '软删除时间，为空表示未删除',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
@@ -176,7 +176,7 @@ CREATE TABLE IF NOT EXISTS `prompts`
     `status`      VARCHAR(50)  NOT NULL COMMENT '状态: draft/published',
     `created_by`  VARCHAR(100) NULL COMMENT '创建者',
     `created_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    `updated_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted_at`  DATETIME     NULL COMMENT '软删除时间，为空表示未删除',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
@@ -200,7 +200,7 @@ CREATE TABLE IF NOT EXISTS `documents`
     `minio_path`        VARCHAR(1000) NULL COMMENT 'MinIO 存储路径',
     `processed_at`      DATETIME      NULL COMMENT '处理完成时间',
     `created_at`        DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_at`        DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    `updated_at`        DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted_at`        DATETIME      NULL COMMENT '软删除时间，为空表示未删除',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
@@ -220,7 +220,7 @@ CREATE TABLE IF NOT EXISTS `prompt_versions`
     `published_by` VARCHAR(100) NULL COMMENT '发布者',
     `published_at` DATETIME     NULL COMMENT '发布时间',
     `created_at`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_at`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    `updated_at`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -239,7 +239,7 @@ CREATE TABLE IF NOT EXISTS `segments`
     `token_count`       INT      NOT NULL COMMENT 'Token 数',
     `hit_count`         INT      NOT NULL COMMENT '检索命中次数',
     `created_at`        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_at`        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    `updated_at`        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -261,7 +261,7 @@ CREATE TABLE IF NOT EXISTS `tools`
     `avg_latency`         INT           NOT NULL COMMENT '平均延迟 ms',
     `created_by`          VARCHAR(100)  NULL COMMENT '创建者',
     `created_at`          DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_at`          DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    `updated_at`          DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted_at`          DATETIME      NULL COMMENT '软删除时间，为空表示未删除',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uq_tools_name` (`name`)
@@ -285,7 +285,7 @@ CREATE TABLE IF NOT EXISTS `agents`
     `version`       VARCHAR(50)   NOT NULL COMMENT '当前版本号',
     `created_by`    VARCHAR(100)  NULL COMMENT '创建者',
     `created_at`    DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_at`    DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    `updated_at`    DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted_at`    DATETIME      NULL COMMENT '软删除时间，为空表示未删除',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
@@ -305,7 +305,7 @@ CREATE TABLE IF NOT EXISTS `agent_versions`
     `published_by` VARCHAR(100) NULL COMMENT '发布者',
     `published_at` DATETIME     NULL COMMENT '发布时间',
     `created_at`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_at`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    `updated_at`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
