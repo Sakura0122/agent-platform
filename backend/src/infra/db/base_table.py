@@ -12,8 +12,11 @@ from sqlalchemy.orm import (
 )
 
 
-class BaseTable(DeclarativeBase):
-    """所有业务表共享的 ORM 基类。"""
+class MappedBase(DeclarativeBase):
+    __abstract__ = True
+
+class CoreTable(MappedBase):
+    """只包含所有表都有的字段。"""
 
     __abstract__ = True
 
@@ -30,15 +33,18 @@ class BaseTable(DeclarativeBase):
         server_onupdate=FetchedValue(),
         comment="最后更新时间",
     )
-    deleted_at: Mapped[datetime | None] = mapped_column(
-        DateTime, comment="软删除时间，为空表示未删除"
-    )
+
+class SoftDeleteMixin:
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime)
 
     def soft_delete(self) -> None:
         self.deleted_at = datetime.now()  # noqa: DTZ005
+    
 
-    def restore(self) -> None:
-        self.deleted_at = None
+class BaseTable(SoftDeleteMixin, CoreTable):
+    """默认业务模型基类，支持软删除。"""
+
+    __abstract__ = True
 
 
 @event.listens_for(Session, "before_flush")
