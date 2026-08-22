@@ -6,7 +6,6 @@ CREATE DATABASE IF NOT EXISTS `agent_platform`
 USE `agent_platform`;
 
 SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
 
 -- 用户表
 CREATE TABLE IF NOT EXISTS `users`
@@ -66,14 +65,13 @@ CREATE TABLE IF NOT EXISTS `roles`
 -- 角色权限关联表
 CREATE TABLE IF NOT EXISTS `role_permissions`
 (
+    `id`            CHAR(36) NOT NULL COMMENT '业务表主键 UUID',
     `role_id`       CHAR(36) NOT NULL COMMENT '角色 UUID',
     `permission_id` CHAR(36) NOT NULL COMMENT '权限 UUID',
     `created_at`    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `updated_at`    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-    `deleted_at`    DATETIME NULL COMMENT '软删除时间，为空表示未删除',
-    PRIMARY KEY (`role_id`, `permission_id`),
-    CONSTRAINT `fk_role_permissions_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE,
-    CONSTRAINT `fk_role_permissions_permission` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uq_role_permissions_pair` (`role_id`, `permission_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -82,14 +80,13 @@ CREATE TABLE IF NOT EXISTS `role_permissions`
 -- 用户角色关联表
 CREATE TABLE IF NOT EXISTS `user_roles`
 (
+    `id`         CHAR(36) NOT NULL COMMENT '业务表主键 UUID',
     `user_id`    CHAR(36) NOT NULL COMMENT '用户 UUID',
     `role_id`    CHAR(36) NOT NULL COMMENT '角色 UUID',
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-    `deleted_at` DATETIME NULL COMMENT '软删除时间，为空表示未删除',
-    PRIMARY KEY (`user_id`, `role_id`),
-    CONSTRAINT `fk_user_roles_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-    CONSTRAINT `fk_user_roles_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uq_user_roles_pair` (`user_id`, `role_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -133,8 +130,7 @@ CREATE TABLE IF NOT EXISTS `models`
     `updated_at`     DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted_at`     DATETIME       NULL COMMENT '软删除时间，为空表示未删除',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uq_models_model_id` (`model_id`),
-    CONSTRAINT `fk_models_provider` FOREIGN KEY (`provider_id`) REFERENCES `model_providers` (`id`) ON DELETE CASCADE
+    UNIQUE KEY `uq_models_model_id` (`model_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -206,8 +202,7 @@ CREATE TABLE IF NOT EXISTS `documents`
     `created_at`        DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `updated_at`        DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted_at`        DATETIME      NULL COMMENT '软删除时间，为空表示未删除',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_documents_knowledge_base` FOREIGN KEY (`knowledge_base_id`) REFERENCES `knowledge_bases` (`id`) ON DELETE CASCADE
+    PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -226,9 +221,7 @@ CREATE TABLE IF NOT EXISTS `prompt_versions`
     `published_at` DATETIME     NULL COMMENT '发布时间',
     `created_at`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `updated_at`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-    `deleted_at`   DATETIME     NULL COMMENT '软删除时间，为空表示未删除',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_prompt_versions_prompt` FOREIGN KEY (`prompt_id`) REFERENCES `prompts` (`id`) ON DELETE CASCADE
+    PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -247,10 +240,7 @@ CREATE TABLE IF NOT EXISTS `segments`
     `hit_count`         INT      NOT NULL COMMENT '检索命中次数',
     `created_at`        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `updated_at`        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-    `deleted_at`        DATETIME NULL COMMENT '软删除时间，为空表示未删除',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_segments_knowledge_base` FOREIGN KEY (`knowledge_base_id`) REFERENCES `knowledge_bases` (`id`) ON DELETE CASCADE,
-    CONSTRAINT `fk_segments_document` FOREIGN KEY (`document_id`) REFERENCES `documents` (`id`) ON DELETE CASCADE
+    PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -297,8 +287,7 @@ CREATE TABLE IF NOT EXISTS `agents`
     `created_at`    DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `updated_at`    DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted_at`    DATETIME      NULL COMMENT '软删除时间，为空表示未删除',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_agents_model` FOREIGN KEY (`model_id`) REFERENCES `models` (`id`) ON DELETE SET NULL
+    PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -317,12 +306,8 @@ CREATE TABLE IF NOT EXISTS `agent_versions`
     `published_at` DATETIME     NULL COMMENT '发布时间',
     `created_at`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `updated_at`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-    `deleted_at`   DATETIME     NULL COMMENT '软删除时间，为空表示未删除',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_agent_versions_agent` FOREIGN KEY (`agent_id`) REFERENCES `agents` (`id`) ON DELETE CASCADE
+    PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
     COMMENT = 'Agent 版本表';
-
-SET FOREIGN_KEY_CHECKS = 1;
