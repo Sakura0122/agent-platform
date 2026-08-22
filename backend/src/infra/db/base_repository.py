@@ -5,7 +5,7 @@ from sqlalchemy import select, update
 from sqlalchemy.engine import CursorResult
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.base_table import BaseTable
+from infra.db.base_table import BaseTable
 
 
 class BaseRepository[T: BaseTable]:

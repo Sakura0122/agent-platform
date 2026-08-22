@@ -7,7 +7,8 @@ from api.router import api_router
 from core.config import settings
 from core.exception_handlers import register_exception_handlers
 from core.logger import setup_logger
-from db.session import engine
+from infra.db.session import engine
+from infra.redis.client import close_redis_client
 from middlewares.logging import LoggingMiddleware
 
 
@@ -21,6 +22,7 @@ async def lifespan(_: FastAPI):
     # 应用关闭时执行
     # 关闭数据库连接池
     await engine.dispose()
+    await close_redis_client()
     logger.info(f"{settings.app_name} 关闭.. ")
 
 

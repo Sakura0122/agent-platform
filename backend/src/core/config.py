@@ -21,6 +21,12 @@ class Settings(BaseSettings):
     database_url: str = ""
     database_echo: bool = False
 
+    # Redis
+    redis_host: str = "localhost"
+    redis_port: int = 6379
+    redis_password: str = ""
+    redis_db: int = 0
+
     logger_level: str = "INFO"
     logger_dir: str = "logs"
 
