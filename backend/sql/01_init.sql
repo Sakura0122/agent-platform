@@ -34,6 +34,8 @@ CREATE TABLE IF NOT EXISTS `permissions`
     `id`          CHAR(36)     NOT NULL COMMENT '业务表主键 UUID',
     `code`        VARCHAR(100) NOT NULL COMMENT '权限编码',
     `name`        VARCHAR(100) NOT NULL COMMENT '权限名称',
+    `parent_id`   CHAR(36)     NULL COMMENT '父级权限 UUID，顶级权限为空',
+    `type`        TINYINT      NOT NULL COMMENT '权限类型: 1目录, 2菜单, 3按钮',
     `description` VARCHAR(200) NULL COMMENT '权限描述',
     `created_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `updated_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
