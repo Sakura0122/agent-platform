@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     database_url: str = ""
     database_echo: bool = False
 
+    token_secret: str = ""
+    token_expire_seconds: PositiveInt = 60 * 60 * 8
+
     # Redis
     redis_host: str = "localhost"
     redis_port: int = 6379
