@@ -11,21 +11,26 @@ from infra.db.session import get_session
 from utils.jwt_utils import parse_admin_token
 
 _bearer_scheme = HTTPBearer(auto_error=False)
+BearerCredentialsDep = Annotated[
+    HTTPAuthorizationCredentials | None,
+    Depends(_bearer_scheme),
+]
 
 
-async def get_current_user(
-    credentials: Annotated[
-        HTTPAuthorizationCredentials | None,
-        Depends(_bearer_scheme),
-    ],
-    db: Annotated[AsyncSession, Depends(get_session)],
-) -> User:
-    """解析 Bearer 令牌并返回当前有效用户。"""
+async def get_current_user_id(credentials: BearerCredentialsDep) -> str:
+    """解析 Bearer 令牌并返回用户标识，不查询数据库。"""
     if credentials is None or credentials.scheme.lower() != "bearer":
         raise BusinessException(ResultCodeEnum.UNAUTHORIZED)
 
-    user_id = parse_admin_token(credentials.credentials)
-    user = await UserRepository(db).get_by_id(str(user_id))
+    return str(parse_admin_token(credentials.credentials))
+
+
+async def get_current_user(
+    user_id: Annotated[str, Depends(get_current_user_id)],
+    db: Annotated[AsyncSession, Depends(get_session)],
+) -> User:
+    """查询并返回当前有效用户。"""
+    user = await UserRepository(db).get_by_id(user_id)
     if user is None:
         raise BusinessException(ResultCodeEnum.UNAUTHORIZED, "登录用户不存在")
     if not user.is_active:

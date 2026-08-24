@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.auth.providers import get_current_admin, get_current_user
+from api.auth.providers import get_current_admin, get_current_user, get_current_user_id
 from api.user.model import User
 from common.page import PageRequest
 from infra.db.session import get_session
@@ -13,6 +13,9 @@ SessionDep = Annotated[AsyncSession, Depends(get_session)]
 
 # 将分页模型中的字段解析为查询参数
 PageQuery = Annotated[PageRequest, Query()]
+
+# 注入当前用户id
+CurrentUserIdDep = Annotated[str, Depends(get_current_user_id)]
 
 # 注入当前已登录且状态有效的用户
 CurrentUserDep = Annotated[User, Depends(get_current_user)]
