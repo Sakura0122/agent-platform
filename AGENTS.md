@@ -94,21 +94,38 @@ async def list_users(
 - 注释用于补充代码、命名和类型标注无法直接表达的信息，不以覆盖所有函数为目标。
 - 路由函数已有清晰的 Swagger `summary` 时，无需再添加同义文档字符串。
 - 简单的依赖提供函数、构造方法以及含义明确的 Service、Repository 方法可以不写文档字符串。
-- 方法存在关键业务规则、副作用、事务边界、特殊异常、缓存行为或其他不直观逻辑时，应添加简洁的
-  中文文档字符串。
+- Service 方法包含多个明确的业务步骤时，使用 `# 1. ...`、`# 2. ...` 的连续编号注释划分流程；
+  每个编号对应一个完整的业务阶段。
+- 编号注释应说明业务目的，例如“校验用户名唯一性”“保存用户”，不逐句翻译赋值、函数调用等
+  代码行为。纯返回语句通常无需单独编号。
+- 方法存在关键业务规则、副作用、事务边界、特殊异常、缓存行为或其他无法通过步骤注释表达的信息
+  时，再添加简洁的中文文档字符串。
 - 参数或返回值无法从类型标注清楚表达时，可在文档字符串中补充 `Args`、`Returns`、`Raises`，
   不机械重复函数签名。
 - 类或 Pydantic 模型的用途无法从命名清楚判断时，再添加中文类文档字符串。
 - 行内注释只用于解释不直观的业务原因、算法或约束，不逐行翻译代码。
-- 注释必须与实现同步；修改行为时一并更新相关文档字符串、Swagger 注解和字段说明。
+- 注释必须与实现同步；增删或调整业务步骤时，重新检查编号，确保连续且没有重复。
 
-需要说明业务规则时的示例：
+多步骤 Service 方法示例：
 
 ```python
 class UserService:
-    async def create(self, data: UserCreateRequest) -> UserResponse:
-        """创建用户；用户名或邮箱已存在时抛出业务异常。"""
-        ...
+    async def create(self, data: UserCreateRequest) -> User:
+        # 1. 校验用户名唯一性
+        if await self.repository.get_by_username(data.username):
+            raise BusinessException(ResultCodeEnum.CONFLICT, "用户名已存在")
+
+        # 2. 规范化并校验邮箱
+        email = data.email.lower()
+        if await self.repository.get_by_email(email):
+            raise BusinessException(ResultCodeEnum.CONFLICT, "邮箱已存在")
+
+        # 3. 加密密码并构造用户
+        hashed_password = await run_in_threadpool(hash_password, data.password)
+        user = User(username=data.username, email=email, hashed_password=hashed_password)
+
+        # 4. 保存用户
+        return await self.repository.create(user)
 ```
 
 ## 5. 禁止新增测试文件
@@ -124,7 +141,7 @@ class UserService:
 
 提交结果前至少确认：
 
-1. 复杂或不直观的逻辑已有必要注释，简单方法没有重复代码含义的冗余注释。
+1. 多步骤 Service 方法使用连续编号注释划分业务流程，简单方法没有冗余注释。
 2. 每个新增或修改的接口都有 `summary` 和 `response_model`。
 3. 请求与响应字段都有中文 `description` 和必要约束，Swagger 页面不存在含义不明的字段。
 4. 接口仍使用统一 `Result[T]` 和项目异常处理机制，没有泄露敏感字段。
