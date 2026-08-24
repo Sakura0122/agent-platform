@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     # Redis
     redis_host: str = "localhost"
     redis_port: int = 6379
-    redis_password: str = ""
+    redis_password: str = "123456"
     redis_db: int = 0
     # 图形验证码在 Redis 中的有效期。
     captcha_expire_seconds: PositiveInt = 5 * 60
