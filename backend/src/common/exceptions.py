@@ -6,6 +6,7 @@ class ResultCodeEnum(Enum):
     UNAUTHORIZED = (401, "请先登录")
     NO_AUTH_ERROR = (403, "无权限")
     NOT_FOUND_ERROR = (404, "请求数据不存在")
+    CONFLICT = (409, "资源已存在")
     SYSTEM_ERROR = (500, "服务器内部错误")
 
     def __init__(self, code: int, message: str):

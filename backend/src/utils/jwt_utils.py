@@ -9,8 +9,8 @@ from common.exceptions import BusinessException, ResultCodeEnum
 from core.config import settings
 
 _ALGORITHM = "HS256"
-_ACCESS_TOKEN_TYPE = "admin"
-_ACCESS_TOKEN_AUDIENCE = "agent-platform"
+_TOKEN_TYPE = "admin"
+_TOKEN_AUDIENCE = "agent-platform"
 
 TokenType = Literal["user", "admin"]
 
@@ -67,20 +67,20 @@ def _parse_token(
         raise BusinessException(ResultCodeEnum.UNAUTHORIZED, "登录态无效") from None
 
 
-def create_admin_access_token(user_id: UUID) -> str:
+def create_admin_token(user_id: UUID) -> str:
     return _create_token(
         user_id,
         secret=_require_secret(settings.token_secret, "token_secret"),
         expire_seconds=settings.token_expire_seconds,
-        token_type=_ACCESS_TOKEN_TYPE,
-        audience=_ACCESS_TOKEN_AUDIENCE,
+        token_type=_TOKEN_TYPE,
+        audience=_TOKEN_AUDIENCE,
     )
 
 
-def parse_admin_access_token(token: str) -> UUID:
+def parse_admin_token(token: str) -> UUID:
     return _parse_token(
         token,
         secret=_require_secret(settings.token_secret, "token_secret"),
-        token_type=_ACCESS_TOKEN_TYPE,
-        audience=_ACCESS_TOKEN_AUDIENCE,
+        token_type=_TOKEN_TYPE,
+        audience=_TOKEN_AUDIENCE,
     )

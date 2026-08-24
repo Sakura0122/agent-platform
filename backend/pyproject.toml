@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "asyncmy>=0.2.14",
+    "captcha>=0.7.1",
     "fastapi>=0.141.1",
     "loguru>=0.7.3",
     "pwdlib[argon2]>=0.3.1",

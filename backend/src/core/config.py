@@ -29,6 +29,8 @@ class Settings(BaseSettings):
     redis_port: int = 6379
     redis_password: str = ""
     redis_db: int = 0
+    # 图形验证码在 Redis 中的有效期。
+    captcha_expire_seconds: PositiveInt = 5 * 60
 
     logger_level: str = "INFO"
     logger_dir: str = "logs"
