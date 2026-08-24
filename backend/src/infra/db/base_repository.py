@@ -140,7 +140,7 @@ class BaseRepository[T: CoreTable]:
         data_sql = (
             select(self.model)
             .where(*conditions)
-            .order_by(*(order_by or (self.model.id.asc(),)))
+            .order_by(*(order_by or ()), self.model.id.asc())
             .offset(offset)
             .limit(limit)
         )
