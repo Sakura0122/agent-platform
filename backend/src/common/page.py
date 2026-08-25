@@ -8,6 +8,9 @@ from common.exceptions import BusinessException, ResultCodeEnum
 class PageRequest(BaseModel):
     current_page: int = Field(default=1, ge=1, description="当前页数")
     page_size: int = Field(default=20, ge=1, description="每页显示条目个数")
+    keyword: str | None = Field(
+        default=None, max_length=50, description="搜索关键词，匹配字段由各接口定义"
+    )
     sort_field: str | None = Field(default=None, description="排序字段")
     is_asc: bool = Field(default=True, description="是否升序")
 

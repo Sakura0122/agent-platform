@@ -37,6 +37,19 @@ class BaseRepository[T: CoreTable]:
         """按主键查询，显式查询可避免 Session 缓存绕过软删除过滤。"""
         return await self.get(self.model.id == id, include_deleted=include_deleted)
 
+    async def get_list(
+        self,
+        *conditions: ColumnElement[bool],
+        include_deleted: bool = False,
+    ) -> list[T]:
+        """按条件查询记录列表。"""
+        sql = select(self.model).where(*conditions).order_by(self.model.id.asc())
+        if include_deleted:
+            sql = sql.execution_options(include_deleted=True)
+
+        result = await self.db.execute(sql)
+        return list(result.scalars().all())
+
     async def get_all(
         self,
         *,

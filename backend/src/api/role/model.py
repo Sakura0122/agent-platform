@@ -1,4 +1,4 @@
-from sqlalchemy import CHAR, ForeignKey, String, UniqueConstraint
+from sqlalchemy import CHAR, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from api.permission.model import Permission
