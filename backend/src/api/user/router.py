@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Path
 
+from api.auth.dependencies import AuthPermission
 from api.dependencies import CurrentUserDep, SessionDep
 from api.user.repository import UserRepository
 from api.user.schema import UserCreateRequest, UserResponse, UserUpdateRequest
@@ -23,6 +24,7 @@ UserServiceDep = Annotated[UserService, Depends(get_user_service)]
     "",
     response_model=Result[UserResponse],
     summary="创建用户",
+    dependencies=[Depends(AuthPermission(["user:create"]))],
 )
 async def create_user(
     data: UserCreateRequest,
@@ -36,6 +38,7 @@ async def create_user(
     "/{user_id}",
     response_model=Result[UserResponse],
     summary="编辑用户信息",
+    dependencies=[Depends(AuthPermission(["user:update"]))],
 )
 async def update_user(
     user_id: Annotated[str, Path(description="用户标识")],

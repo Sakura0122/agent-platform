@@ -45,3 +45,26 @@ async def get_current_admin(
     if not user.is_superuser:
         raise BusinessException(ResultCodeEnum.NO_AUTH_ERROR, "仅管理员可执行此操作")
     return user
+
+
+class AuthPermission:
+    """校验登录态，并检查当前用户是否具备指定接口权限码。"""
+
+    def __init__(self, permissions: list[str] | None = None) -> None:
+        self.permissions = permissions or []
+
+    async def __call__(self, user: Annotated[User, Depends(get_current_user)]) -> User:
+        if (
+            user.is_superuser
+            or not self.permissions
+            or "*" in self.permissions
+            or "*:*:*" in self.permissions
+        ):
+            return user
+
+        user_permissions = {
+            permission.code for role in user.roles for permission in role.permissions
+        }
+        if not any(code in user_permissions for code in self.permissions):
+            raise BusinessException(ResultCodeEnum.NO_AUTH_ERROR, "无权限操作")
+        return user
